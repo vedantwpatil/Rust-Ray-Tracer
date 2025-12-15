@@ -10,4 +10,4 @@ This calculation is pretty simple, we can just use the vector form of the sphere
 
 # Current Image
 
-![PPM Image](image.ppm)
+![PPM Image](./src/image.ppm)
