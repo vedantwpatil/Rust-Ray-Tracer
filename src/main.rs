@@ -3,6 +3,7 @@ mod color;
 mod common;
 mod hittable;
 mod hittable_list;
+mod material;
 mod ray;
 mod sphere;
 mod vec3;
@@ -11,9 +12,11 @@ use camera::Camera;
 use color::Color;
 use hittable::{HitRecord, Hittable};
 use hittable_list::HittableList;
+use material::{Lambertian, Metal};
 use ray::Ray;
 use sphere::Sphere;
 use std::io;
+use std::rc::Rc;
 use vec3::{Point3, Vec3};
 
 fn hit_sphere(center: Point3, radius: f64, r: &Ray) -> f64 {
@@ -36,9 +39,20 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: i32) -> Color {
     }
     let mut rec = HitRecord::new();
     if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
+        let mut attenuation = Color::default();
+        let mut scattered = Ray::default();
+        if rec
+            .material
+            .as_ref()
+            .unwrap()
+            .scatter(r, &rec, &mut attenuation, &mut scattered)
+        {
+            return attenuation * ray_color(&scattered, world, depth - 1);
+        }
         // We utilize random ray's to represent the light that hits the sphere
-        let direction = rec.normal + vec3::random_unit_vector();
-        return 0.5 * ray_color(&Ray::new(rec.p, direction), world, depth - 1);
+        // let direction = rec.normal + vec3::random_unit_vector();
+        // return 0.5 * ray_color(&Ray::new(rec.p, direction), world, depth - 1);
+        return Color::new(0.0, 0.0, 0.0);
     }
     let t = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, r);
 
@@ -62,8 +76,31 @@ fn main() {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
-    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+    let material_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
+    let material_center = Rc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
+    let material_left = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.3));
+    let material_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 0.3));
+
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        material_ground,
+    )));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        material_center,
+    )));
+    world.add(Box::new(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        material_left,
+    )));
+    world.add(Box::new(Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        material_right,
+    )));
 
     // Camera
     let viewport_height = 2.0;
