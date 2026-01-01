@@ -1,0 +1,5 @@
+[jobs.image]
+command = ["sh", "-c", "cargo run --release > image.ppm && open image.ppm"]
+need_stdout = false
+allow_warnings = true
+background = false
