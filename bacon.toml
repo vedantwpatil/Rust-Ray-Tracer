@@ -1,5 +1,9 @@
 [jobs.image]
-command = ["sh", "-c", "cargo run --release > image.ppm && open image.ppm"]
+command = [
+  "sh",
+  "-c",
+  "cargo run --release > ./image.ppm && ./convert.bash && open ./image.jpeg",
+]
 need_stdout = false
 allow_warnings = true
 background = false

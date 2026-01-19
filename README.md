@@ -10,7 +10,7 @@ This calculation is pretty simple, we can just use the vector form of the sphere
 
 # Current Image
 
-![PPM Image](./src/image.ppm)
+![Image](./image.jpeg)
 
 ### Additional Follow Up
 
