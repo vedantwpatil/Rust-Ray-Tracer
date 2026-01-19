@@ -11,3 +11,8 @@ This calculation is pretty simple, we can just use the vector form of the sphere
 # Current Image
 
 ![PPM Image](./src/image.ppm)
+
+### Additional Follow Up
+
+![https://raytracing.github.io/books/RayTracingTheNextWeek.html]
+![https://raytracing.github.io/books/RayTracingTheRestOfYourLife.html]
